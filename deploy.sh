@@ -16,8 +16,8 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
-    echo -e "${RED}Docker Compose is not installed. Please install Docker Compose first.${NC}"
+if ! docker compose version &> /dev/null; then
+    echo -e "${RED}Docker Compose is not available. Please install Docker Compose plugin.${NC}"
     exit 1
 fi
 
@@ -62,11 +62,11 @@ done
 
 # Pull latest images
 echo -e "${YELLOW}Pulling latest Docker images...${NC}"
-docker-compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml pull
 
 # Start the services
 echo -e "${YELLOW}Starting services...${NC}"
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 
 # Wait for services to be ready
 echo -e "${YELLOW}Waiting for services to start...${NC}"
@@ -76,7 +76,7 @@ sleep 30
 echo -e "${YELLOW}Checking service health...${NC}"
 services=("nginx" "simstudio" "realtime" "db")
 for service in "${services[@]}"; do
-    if docker-compose -f docker-compose.prod.yml ps | grep -q "$service.*Up"; then
+    if docker compose -f docker-compose.prod.yml ps | grep -q "$service.*Up"; then
         echo -e "${GREEN}✅ $service is running${NC}"
     else
         echo -e "${RED}❌ $service is not running${NC}"
@@ -99,9 +99,9 @@ echo "   - realtime.codingape.in → $(curl -s ifconfig.me 2>/dev/null || echo '
 echo "   - ollama.codingape.in → $(curl -s ifconfig.me 2>/dev/null || echo 'YOUR_SERVER_IP')"
 echo ""
 echo "2. Get real SSL certificates with Let's Encrypt:"
-echo "   docker-compose -f docker-compose.prod.yml exec nginx ./setup-ssl.sh"
+echo "   docker compose -f docker-compose.prod.yml exec nginx ./setup-ssl.sh"
 echo ""
 echo "3. Monitor logs:"
-echo "   docker-compose -f docker-compose.prod.yml logs -f"
+echo "   docker compose -f docker-compose.prod.yml logs -f"
 echo ""
 echo -e "${GREEN}Happy coding! 🚀${NC}"

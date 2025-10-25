@@ -36,39 +36,39 @@ show_help() {
 
 start_services() {
     echo -e "${YELLOW}Starting SimStudio services...${NC}"
-    docker-compose -f $COMPOSE_FILE up -d
+    docker compose -f $COMPOSE_FILE up -d
     echo -e "${GREEN}✅ Services started${NC}"
 }
 
 stop_services() {
     echo -e "${YELLOW}Stopping SimStudio services...${NC}"
-    docker-compose -f $COMPOSE_FILE down
+    docker compose -f $COMPOSE_FILE down
     echo -e "${GREEN}✅ Services stopped${NC}"
 }
 
 restart_services() {
     echo -e "${YELLOW}Restarting SimStudio services...${NC}"
-    docker-compose -f $COMPOSE_FILE restart
+    docker compose -f $COMPOSE_FILE restart
     echo -e "${GREEN}✅ Services restarted${NC}"
 }
 
 show_status() {
     echo -e "${BLUE}Service Status:${NC}"
-    docker-compose -f $COMPOSE_FILE ps
+    docker compose -f $COMPOSE_FILE ps
 }
 
 show_logs() {
     if [ "$2" = "-f" ]; then
-        docker-compose -f $COMPOSE_FILE logs -f
+        docker compose -f $COMPOSE_FILE logs -f
     else
-        docker-compose -f $COMPOSE_FILE logs --tail=100
+        docker compose -f $COMPOSE_FILE logs --tail=100
     fi
 }
 
 update_services() {
     echo -e "${YELLOW}Updating SimStudio...${NC}"
-    docker-compose -f $COMPOSE_FILE pull
-    docker-compose -f $COMPOSE_FILE up -d
+    docker compose -f $COMPOSE_FILE pull
+    docker compose -f $COMPOSE_FILE up -d
     echo -e "${GREEN}✅ Services updated${NC}"
 }
 
@@ -76,14 +76,14 @@ setup_ssl() {
     echo -e "${YELLOW}Setting up SSL certificates...${NC}"
     
     # First, ensure nginx is running with self-signed certs
-    docker-compose -f $COMPOSE_FILE up -d nginx
+    docker compose -f $COMPOSE_FILE up -d nginx
     
     # Get Let's Encrypt certificates
     domains=("sim.codingape.in" "realtime.codingape.in" "ollama.codingape.in")
     
     for domain in "${domains[@]}"; do
         echo "Getting certificate for $domain..."
-        docker-compose -f $COMPOSE_FILE run --rm certbot certonly \
+        docker compose -f $COMPOSE_FILE run --rm certbot certonly \
             --webroot \
             --webroot-path=/var/www/html \
             --email admin@codingape.in \
@@ -94,7 +94,7 @@ setup_ssl() {
     done
     
     # Reload nginx
-    docker-compose -f $COMPOSE_FILE exec nginx nginx -s reload
+    docker compose -f $COMPOSE_FILE exec nginx nginx -s reload
     echo -e "${GREEN}✅ SSL certificates configured${NC}"
 }
 
@@ -103,7 +103,7 @@ backup_database() {
     backup_file="backup_${timestamp}.sql"
     
     echo -e "${YELLOW}Creating database backup...${NC}"
-    docker-compose -f $COMPOSE_FILE exec db pg_dump -U postgres simstudio > $backup_file
+    docker compose -f $COMPOSE_FILE exec db pg_dump -U postgres simstudio > $backup_file
     echo -e "${GREEN}✅ Database backup created: $backup_file${NC}"
 }
 
@@ -119,7 +119,7 @@ restore_database() {
     fi
     
     echo -e "${YELLOW}Restoring database from $2...${NC}"
-    docker-compose -f $COMPOSE_FILE exec -T db psql -U postgres simstudio < "$2"
+    docker compose -f $COMPOSE_FILE exec -T db psql -U postgres simstudio < "$2"
     echo -e "${GREEN}✅ Database restored${NC}"
 }
 
@@ -132,7 +132,7 @@ cleanup_docker() {
 
 open_shell() {
     echo -e "${YELLOW}Opening shell in SimStudio container...${NC}"
-    docker-compose -f $COMPOSE_FILE exec simstudio /bin/sh
+    docker compose -f $COMPOSE_FILE exec simstudio /bin/sh
 }
 
 # Main command handling
