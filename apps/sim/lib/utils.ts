@@ -409,7 +409,34 @@ export function getInvalidCharacters(name: string): string[] {
  * Generate a short request ID for correlation
  */
 export function generateRequestId(): string {
-  return crypto.randomUUID().slice(0, 8)
+  return generateUUID().slice(0, 8)
+}
+
+/**
+ * Generate a UUID that works in all environments (browser and server)
+ * Falls back to uuid package when crypto.randomUUID is not available
+ */
+export function generateUUID(): string {
+  try {
+    // Try to use crypto.randomUUID if available (modern browsers and Node.js 16+)
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID()
+    }
+  } catch (error) {
+    // Fall through to fallback
+  }
+
+  try {
+    // Try to use Node.js crypto module
+    const { randomUUID } = require('crypto')
+    return randomUUID()
+  } catch (error) {
+    // Fall through to fallback
+  }
+
+  // Fallback to uuid package
+  const { v4: uuidv4 } = require('uuid')
+  return uuidv4()
 }
 
 /**

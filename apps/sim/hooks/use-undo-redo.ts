@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import type { Edge } from 'reactflow'
 import { useSession } from '@/lib/auth-client'
 import { createLogger } from '@/lib/logs/console/logger'
+import { generateUUID } from '@/lib/utils'
 import { useOperationQueue } from '@/stores/operation-queue/store'
 import {
   createOperationEntry,
@@ -35,7 +36,7 @@ export function useUndoRedo() {
       if (!activeWorkflowId) return
 
       const operation: Operation = {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         type: 'add-block',
         timestamp: Date.now(),
         workflowId: activeWorkflowId,
